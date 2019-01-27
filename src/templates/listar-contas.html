@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<script language = "javascript" type = "text/javascript" src="https://code.jquery.com/jquery-3.3.1.js"></script>
+		<script language = "javascript" type = "text/javascript" src="http://code.jquery.com/ui/1.9.2/jquery-ui.js"></script>
+		<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.css">
+		<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.js"></script>
+		<script>
+			$(document).ready( function () {
+				var data = {{contas | safe}}
+				append_json(data)
+    		//$('#tabela').DataTable({});
+		});
+	</script>
+	</head>
+	<style>
+		#contas_table {
+  			font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+  			border-collapse: collapse;
+  			width: 100%;
+		}
+
+		#contas_table td, #contas_table th {
+  			border: 1px solid #fff;
+  			padding: 8px;
+		}
+
+		#contas_table tr:nth-child(even){background-color: #ff0000; color: black;}
+		#contas_table tr:nth-child(odd){color: black;}
+		#contas_table tr:hover {background-color: #fff;}
+
+		#contas_table th {
+  			padding-top: 12px;
+  			padding-bottom: 12px;
+  			text-align: left;
+  			background-color: #000000;
+  			color: red;
+		}
+
+		.selected {
+			background-color: #ffffff;
+			color: blue;
+		}
+		.btn_default{
+			background-color: #303030;
+			border: 1px;
+			color: red;
+			padding: 15px 32px;
+			text-align: center;
+			text-decoration: none;
+			display: inline-block;
+			font-size: 56px;
+			border-radius: 45px;
+			border: 2px;
+		}
+		.btn_custom {
+  			background-color: #ff0000;
+  			color: black; 
+  			border: 2px solid #000000;
+  		}
+
+		.btn_custom:hover {
+  			background-color: #000000;
+  			color: red;
+		}
+	</style>
+	<title>
+		Listar Contas
+	</title>
+	<header>
+		<h1 style="color:red">
+			<b>Listar Contas</b>
+		</h1>
+		<hr>
+	</header>
+	<body style = "background-color:Silver">
+		<table name = "tabela" id = "contas_table" class = "contas_table">
+			<tr>
+				<th> conta </th>
+				<th> data_vencimento </th>
+				<th> valor_conta </th>
+			</tr>
+			<tr id = "tr"> 
+			</tr>
+		</table><br><br>
+		<hr>
+		<form name = "form" action = "/update-conta">
+			<div>
+				<label>Conta: </label><br>
+				<input type = "text" id = "conta" name = "conta"></label><br><br>
+				<label>Data de Vencimento: </label><br>
+				<input type = "date" id = "data_vencimento" name = "data_vencimento"><br><br>
+				<label>Data de Pagamento: </label><br>
+				<input type = "date" id = "data_pagamento" name = "data_pagamento"/><br><br>
+				<script>
+					document.getElementById('data_pagamento').value = new Date().toISOString().substring(0, 10);
+				</script>
+				<label>Pagador: </label><br>
+				<select name = "pagador">
+					<option value=""></option>
+	  				<option value="Andre">André</option>
+	  				<option value="Barbara">Barbara</option>
+	  				<option value="Mae">Mãe</option>
+	  				<option value="Beatriz">Beatriz</option>
+				</select><br><br>
+				<label>Valor Pago: </label><br>
+				<input type = "text" id = "valor_pago" name = "valor_pago"><br><br>
+				<label>OBS: </label><br>
+				<input type = "text" id = "obs" name = "obs"/><br><br>
+				<hr>
+				<input class = "btn_default btn_custom" type = "submit" value = "Pagar">
+			</div>
+		</form>
+	</body>
+	<script>
+        //this function appends the json data to the table 'gable'
+        function append_json(data){
+            var table = document.getElementById('contas_table');
+            data.forEach(function(object) {
+                var tr = document.createElement('tr');
+                tr.innerHTML = '<td>' + object.conta + '</td>' +
+							'<td>' + object.data_vencimento + '</td>' +
+							'<td>' + Number(object.valor_conta).toFixed(2) + '</td>'
+                table.appendChild(tr);
+            });
+            $("#contas_table tr").click(function(){
+   				$(this).addClass('selected').siblings().removeClass('selected');    
+   				var value=$(this).find('td');
+   				document.getElementById("conta").value = value[0].innerText
+   				var d = value[1].innerText
+   				document.getElementById("data_vencimento").value = d.substring(6,10) + '-' + d.substring(3, 5) + '-' + d.substring(0, 2)
+   				document.getElementById("valor_pago").value = value[2].innerText
+			});
+
+			$('.ok').on('click', function(e){
+   				var selectedIDs = [];
+   				$("#table tr.selected").each(function(index, row) {
+      			selectedIDs.push($(row).find("td:first").html());
+   			})});
+   		}
+	</script>
+
+</html>
