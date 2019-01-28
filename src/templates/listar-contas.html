@@ -3,77 +3,27 @@
 	<head>
 		<script language = "javascript" type = "text/javascript" src="https://code.jquery.com/jquery-3.3.1.js"></script>
 		<script language = "javascript" type = "text/javascript" src="http://code.jquery.com/ui/1.9.2/jquery-ui.js"></script>
-		<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.css">
-		<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.js"></script>
+		<link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}" />
 		<script>
 			$(document).ready( function () {
 				var data = {{contas | safe}}
 				append_json(data)
-    		//$('#tabela').DataTable({});
 		});
 	</script>
 	</head>
 	<style>
-		#contas_table {
-  			font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-  			border-collapse: collapse;
-  			width: 100%;
-		}
 
-		#contas_table td, #contas_table th {
-  			border: 1px solid #fff;
-  			padding: 8px;
-		}
-
-		#contas_table tr:nth-child(even){background-color: #ff0000; color: black;}
-		#contas_table tr:nth-child(odd){color: black;}
-		#contas_table tr:hover {background-color: #fff;}
-
-		#contas_table th {
-  			padding-top: 12px;
-  			padding-bottom: 12px;
-  			text-align: left;
-  			background-color: #000000;
-  			color: red;
-		}
-
-		.selected {
-			background-color: #ffffff;
-			color: blue;
-		}
-		.btn_default{
-			background-color: #303030;
-			border: 1px;
-			color: red;
-			padding: 15px 32px;
-			text-align: center;
-			text-decoration: none;
-			display: inline-block;
-			font-size: 56px;
-			border-radius: 45px;
-			border: 2px;
-		}
-		.btn_custom {
-  			background-color: #ff0000;
-  			color: black; 
-  			border: 2px solid #000000;
-  		}
-
-		.btn_custom:hover {
-  			background-color: #000000;
-  			color: red;
-		}
 	</style>
 	<title>
 		Listar Contas
 	</title>
 	<header>
-		<h1 style="color:red">
+		<h1 class = "layout_default">
 			<b>Listar Contas</b>
 		</h1>
 		<hr>
 	</header>
-	<body style = "background-color:Silver">
+	<body class = "layout_default">
 		<table name = "tabela" id = "contas_table" class = "contas_table">
 			<tr>
 				<th> conta </th>

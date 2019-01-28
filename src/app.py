@@ -1,6 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for
 import simplejson as json
-from Contas import Contas
 import sys
 import psycopg2
 import datetime
@@ -15,7 +14,7 @@ def main(args):
 
 @app.route("/cadastrar-conta")
 def cadastrarConta():
-	return render_template('conta_cadastrada.html')
+	return render_template('cadastrar_conta.html')
 
 @app.route("/submeter-conta", methods = ['GET'])
 def submeterConta():

@@ -1,32 +1,11 @@
 <!DOCTYPE html>
 <html>
+	<head>
+		<link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}" />
+	</head>
 	<title>
 		Cadastro de Contas
 	</title>
-	<style type="text/css">
-		.btn_default{
-			background-color: #303030;
-			border: 1px;
-			color: red;
-			padding: 15px 32px;
-			text-align: center;
-			text-decoration: none;
-			display: inline-block;
-			font-size: 56px;
-			border-radius: 45px;
-			border: 2px;
-		}
-		.btn_custom {
-  			background-color: #ff0000; 
-  			color: black; 
-  			border: 2px solid #000000;
-  		}
-
-		.btn_custom:hover {
-  			background-color: #000000;
-  			color: red;
-		}
-	</style>
 	<header>
 	    <hr>
 		<h1>
@@ -34,7 +13,7 @@
 		</h1>
 		<hr>
 	</header>
-	<body class = "negrito" style="background-color: #303030; color: red">
+	<body class = "layout_default">
 		<form name = "form" action = "/submeter-conta" onsubmit="return validateForm()">
 		<div>
 			<label>Conta:<br></label>

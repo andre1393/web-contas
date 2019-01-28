@@ -1,0 +1,53 @@
+.layout_default {
+	color: red;
+	background-color: silver;
+	font-weight: bold;
+}
+.btn_default{
+	background-color: #303030;
+	border: 1px;
+	color: red;
+	padding: 15px 32px;
+	text-align: center;
+	text-decoration: none;
+	display: inline-block;
+	font-size: 56px;
+	border-radius: 45px;
+	border: 2px;
+}
+.btn_custom {
+  	background-color: #ff0000; 
+  	color: black; 
+  	border: 2px solid #000000;
+}
+.btn_custom:hover {
+  	background-color: #000000;
+  	color: red;
+}
+#contas_table {
+  	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+  	border-collapse: collapse;
+  	width: 100%;
+}
+
+#contas_table td, #contas_table th {
+  	border: 1px solid #fff;
+  	padding: 8px;
+}
+
+#contas_table tr:nth-child(even){background-color: #ff0000; color: black;}
+#contas_table tr:nth-child(odd){color: black;}
+#contas_table tr:hover {background-color: #fff;}
+
+#contas_table th {
+  	padding-top: 12px;
+  	padding-bottom: 12px;
+  	text-align: left;
+  	background-color: #000000;
+  	color: red;
+}
+
+.selected {
+	background-color: #ffffff;
+	color: blue;
+}
