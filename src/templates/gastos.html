@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<script language = "javascript" type = "text/javascript" src="https://code.jquery.com/jquery-3.3.1.js"></script>
+		<script language = "javascript" type = "text/javascript" src="http://code.jquery.com/ui/1.9.2/jquery-ui.js"></script>
+		<link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}" />
+		<script type="text/javascript" src="{{ url_for('static', filename = 'js/main.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename = 'js/gastos.js') }}"></script>
+		<script type="text/javascript">
+			$(document).ready( function () {
+				var data = {{gastos | safe}}
+				append_json(data, 'contas_table', ['conta', 'data_pagamento', 'valor', 'pagador', 'categoria', 'obs'])
+			});
+		</script>
+	</head>
+	<title>
+		Gastos
+	</title>
+	<header>
+	    <hr>
+		<h1>
+			Gastos
+		</h1>
+		<hr>
+	</header>
+	<body class = "layout_default">
+		<form name = "form" action = "/submeter-gasto" onsubmit="return validateForm()">
+		<div>
+			<label>Conta: <br></label>
+			<input type = "text" name="conta"><br>
+			<label>Valor: <br></label>
+			<input type="number" min="1" step="any" name = "valor"><br>
+			<label>Categoria:<br></label>
+			<select name = "categoria">
+				<option value = "outros">Outros</option>
+				<option value = "contas_fixas">Contas Fixas</option>
+				<option value = "alimentacao">Alimentação</option>
+				<option value = "carro">Carro</option>
+				<option value = "bethoven">Bethoven</option>
+			</select>
+			<br>
+			<label>Data Pagamento:<br></label>
+			<input type = "date" name = "data_pagamento"><br>
+			<label>Pagador:<br></label>
+			<select name = "pagador">
+				<option value=""></option>
+  				<option value="Andre">André</option>
+  				<option value="Barbara">Barbara</option>
+  				<option value="Mae">Mãe</option>
+  				<option value="Beatriz">Beatriz</option>
+			</select>
+			<br>
+			<label>OBS: </label><br>
+			<input type = "text" id = "obs" name = "obs"/><br>
+			<input class = "btn_default btn_custom" type = "submit" value = "Enviar" align = "right"><br>
+		</div>
+		<hr>
+		<div>
+			<table name = "tabela" id = "contas_table" class = "contas_table">
+				<tr>
+					<th> conta </th>
+					<th> data pagamento </th>
+					<th> valor </th>
+					<th> pagador </th>
+					<th> categoria </th>
+					<th> obs </th>
+				</tr>
+				<tr id = "tr"></tr>
+			</table>
+		</div>
+		</form>
+	</body>
+</html>

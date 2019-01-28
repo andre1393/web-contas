@@ -4,6 +4,7 @@ import sys
 import psycopg2
 import datetime
 import time 
+
 app = Flask(__name__)
 
 def main(args):
@@ -48,22 +49,7 @@ def listar_contas():
 	conn, cur = load_config()
 	cur.execute("SELECT * FROM tb_all_contas where pago = 'nao'")
 	contas = cur.fetchall()
-	result = []
-	item = {}
-	for conta in contas:
-		item = {}
-		for i in range(len(conta)):
-			if isinstance(conta[i], datetime.date):
-				item[cur.description[i][0]] = conta[i].strftime("%d/%m/%Y")
-			else:
-				item[cur.description[i][0]] = conta[i]
-		for key, it in item.items():
-			if it is None:
-				item[key] = ''
-
-		result.append(item)
-
-	result_str = json.dumps(result).replace("'0'","'nao'").replace("'1'", "'sim'")
+	result_str = getDataset(contas, cur)
 	return render_template('listar-contas.html', contas = result_str)	
 
 @app.route("/update-conta")
@@ -84,11 +70,49 @@ def update_conta():
 
 	return render_template("redirect.html", message = "'Conta atualizada com sucesso'", page = "'/listar-contas'")
 
+@app.route("/gastos")
+def gastos():
+	conn, cur = load_config()
+	cur.execute("SELECT * FROM tb_gastos")
+	gastos = cur.fetchall()
+	result_str = getDataset(gastos, cur)
+	return render_template("gastos.html", gastos = result_str)
+
+@app.route("/submeter-gasto", methods = ['GET'])
+def submeterGasto():
+	conn, cur = load_config()
+	conta = "'%s'" % request.args.get("conta") if request.args.get("conta") else 'NULL'
+	data_pagamento = "'%s'" % request.args.get("data_pagamento") if request.args.get("data_pagamento") else 'NULL'
+	valor = "'%.2f'" % float(request.args.get("valor")) if request.args.get("valor") else 'NULL'
+	pagador = "'%s'" % request.args.get("pagador") if request.args.get("pagador") else 'NULL'
+	obs = "'%s'" % request.args.get("obs") if request.args.get("obs") else 'NULL'
+	categoria = "'%s'" % request.args.get("categoria") if request.args.get("categoria") else 'NULL'
+
+	form = "(%s, %s, %s, %s, %s, %s)" % (conta, data_pagamento, valor, pagador, categoria, obs)
+	print(form, file=sys.stderr)
+	form = form.replace("'NULL'", "NULL")
+	cur.execute('INSERT INTO %s (%s) values %s' % ('tb_gastos', "conta, data_pagamento, valor, pagador, categoria, obs", form))
+	conn.commit()
+
+	return render_template("redirect.html", message = "'Gasto cadastrado com sucesso'", page = "'/gastos'")	
+
 @app.route("/redirect")
 def redirect():
 	message = request.args.get("message") if request.args.get("message") else ''
 	page = request.args.get("page") if request.args.get("page") else ''
 	return render_template('redirect.html', message = page, page = page)
+
+@app.after_request
+def add_header(r):
+    """
+    Add headers to both force latest IE rendering engine or Chrome Frame,
+    and also to cache the rendered page for 10 minutes.
+    """
+    r.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    r.headers["Pragma"] = "no-cache"
+    r.headers["Expires"] = "0"
+    r.headers['Cache-Control'] = 'public, max-age=0'
+    return r
 
 def load_config():
 	with open('./config/config.json') as content:
@@ -102,6 +126,24 @@ def load_config():
 
 def toBit(x):
 	return "'1'" if x == 'true' else "'0'"
+
+def getDataset(dataset, cur):
+	result = []
+	item = {}
+	for obj in dataset:
+		item = {}
+		for i in range(len(obj)):
+			if isinstance(obj[i], datetime.date):
+				item[cur.description[i][0]] = obj[i].strftime("%d/%m/%Y")
+			else:
+				item[cur.description[i][0]] = obj[i]
+		for key, it in item.items():
+			if it is None:
+				item[key] = ''
+
+		result.append(item)
+		result_str = json.dumps(result, use_decimal = True).replace("'0'","'nao'").replace("'1'", "'sim'")
+	return result_str
 
 if __name__ == "__main__":
 	main(sys.argv[1:])
