@@ -9,7 +9,7 @@
 		<script type="text/javascript">
 			$(document).ready( function () {
 				var data = {{gastos | safe}}
-				append_json(data, 'contas_table', ['conta', 'data_pagamento', 'valor', 'pagador', 'categoria', 'obs'])
+				append_json(data, 'contas_table', ['conta', 'data_pagamento', 'valor_pago', 'pagador', 'categoria', 'obs'])
 			});
 		</script>
 	</head>
@@ -28,8 +28,8 @@
 		<div>
 			<label>Conta: <br></label>
 			<input type = "text" name="conta"><br>
-			<label>Valor: <br></label>
-			<input type="number" min="1" step="any" name = "valor"><br>
+			<label>Valor Pago: <br></label>
+			<input type="number" min="1" step="any" name = "valor_pago"><br>
 			<label>Categoria:<br></label>
 			<select name = "categoria">
 				<option value = "outros">Outros</option>

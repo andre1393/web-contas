@@ -1,5 +1,7 @@
-function handleRadio(elemento){
-	var checked = document.getElementById(elemento.name + "_sim").checked
+function handleRadio(elemento, sufix){
+	console.log(elemento.name + sufix)
+	console.log(document.getElementById(elemento.name + sufix))
+	var checked = document.getElementById(elemento.name + sufix).checked
 	if(checked){
 		document.getElementById("div_" + elemento.name).style.display = "inline"
 	}else{
@@ -7,7 +9,7 @@ function handleRadio(elemento){
 	}
 }
 
-//this function appends the json data to the table 'gable'
+//this function appends the json data to the table 'table'
 function append_json(data, table_name, columns){
 	var table = document.getElementById(table_name);
 	data.forEach(function(object) {

@@ -2,10 +2,12 @@
 function append_json(data){
 	var table = document.getElementById('contas_table');
 	data.forEach(function(object) {
+		data_vencimento = getDataVencimento(object.dia_vencimento)
 		var tr = document.createElement('tr');
 		tr.innerHTML = '<td>' + object.conta + '</td>' +
-		'<td>' + object.data_vencimento + '</td>' +
-		'<td>' + Number(object.valor_conta).toFixed(2) + '</td>'
+		'<td>' + data_vencimento + '</td>' +
+		'<td>' + Number(object.valor_conta).toFixed(2) + '</td>' +
+		'<td>' + object.categoria + '</td>'
 		table.appendChild(tr);
 	});
 	$("#contas_table tr").click(function(){
@@ -15,6 +17,7 @@ function append_json(data){
    		var d = value[1].innerText
    		document.getElementById("data_vencimento").value = d.substring(6,10) + '-' + d.substring(3, 5) + '-' + d.substring(0, 2)
    		document.getElementById("valor_pago").value = value[2].innerText
+   		document.getElementById("categoria").value = value[3].innerText
 	});
 
 	$('.ok').on('click', function(e){
@@ -22,4 +25,13 @@ function append_json(data){
    		$("#table tr.selected").each(function(index, row) {
       		selectedIDs.push($(row).find("td:first").html());
    		})});
+}
+
+function getDataVencimento(dia_vencimento){
+	var d = new Date()
+	return getTwoDigits(dia_vencimento) + '/' + getTwoDigits(d.getMonth() + 1) + '/' + d.getFullYear()
+}
+
+function getTwoDigits(number){
+	return ("0" + number).slice(-2)
 }

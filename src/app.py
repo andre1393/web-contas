@@ -3,7 +3,6 @@ import simplejson as json
 import sys
 import psycopg2
 import datetime
-import time 
 
 app = Flask(__name__)
 
@@ -15,27 +14,25 @@ def main(args):
 
 @app.route("/cadastrar-conta")
 def cadastrarConta():
-	return render_template('cadastrar_conta.html')
+	result_str = getDataset("SELECT * FROM tb_all_contas")
+	print(result_str, file=sys.stderr)
+	return render_template('cadastrar_conta.html', contas = result_str)
 
 @app.route("/submeter-conta", methods = ['GET'])
 def submeterConta():
 	conn, cur = load_config()
 	conta = "'%s'" % request.args.get("conta") if request.args.get("conta") else 'NULL'
-	data_vencimento = "'%s'" % request.args.get("data_vencimento") if request.args.get("data_vencimento") else 'NULL'
-	data_pagamento = "'%s'" % request.args.get("data_pagamento") if request.args.get("data_pagamento") else 'NULL'
-	valor_conta = "'%.2f'" % float(request.args.get("valor_conta")) if request.args.get("valor_conta") else 'NULL'
-	valor_pago = "'%.2f'" % float(request.args.get("valor_pago")) if request.args.get("valor_pago") else 'NULL'
-	pago = "'%s'" % request.args.get("pago") if request.args.get("pago") else 'NULL'
-	pagador = "'%s'" % request.args.get("pagador") if request.args.get("pagador") else 'NULL'
-	recorrente = "'%s'" % request.args.get("recorrente") if request.args.get("recorrente") else 'NULL'
-	valor_igual = "'%s'" % request.args.get("valor_igual") if request.args.get("valor_igual") else 'NULL'
-	parcelado = "'%s'" % request.args.get("parcelado") if request.args.get("parcelado") else 'NULL'
+	dia_vencimento = "'%s'" % request.args.get("dia_vencimento") if request.args.get("dia_vencimento") else 'NULL'
+	categoria = "'%s'" % request.args.get("categoria") if request.args.get("categoria") else 'NULL'
+	tipo_conta = "'%s'" % request.args.get("tipo_conta") if request.args.get("tipo_conta") else 'NULL'
 	qtd_parcelas = "'%s'" % request.args.get("qtd_parcelas") if request.args.get("qtd_parcelas") else 'NULL'
+	valor_igual = "'%s'" % request.args.get("valor_igual") if request.args.get("valor_igual") else 'NULL'
+	valor_conta = "'%.2f'" % float(request.args.get("valor_conta")) if request.args.get("valor_conta") else 'NULL'
 
-	form = "(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)" % (conta, data_vencimento, data_pagamento, valor_conta, valor_pago, pago, pagador, recorrente, valor_igual, parcelado, qtd_parcelas)
-	print(form, file=sys.stderr)
+	form = "(%s, %s, %s, %s, %s, %s, %s)" % (conta, dia_vencimento, categoria, tipo_conta, qtd_parcelas, valor_igual, valor_conta)
+	#print(form, file=sys.stderr)
 	form = form.replace("'NULL'", "NULL")
-	cur.execute('INSERT INTO %s (%s) values %s' % ('tb_all_contas', "conta, data_vencimento, data_pagamento, valor_conta, valor_pago, pago, pagador, recorrente, valor_igual, parcelado, qtd_parcelas", form))
+	cur.execute('INSERT INTO %s (%s) values %s' % ('tb_all_contas', "conta, dia_vencimento, categoria, tipo_conta, qtd_parcelas, valor_igual, valor_conta", form))
 	conn.commit()
 
 	return render_template("redirect.html", message = "'Conta cadastrada com sucesso'", page = "'/home'")
@@ -46,36 +43,33 @@ def home():
 
 @app.route("/listar-contas")
 def listar_contas():
-	conn, cur = load_config()
-	cur.execute("SELECT * FROM tb_all_contas where pago = 'nao'")
-	contas = cur.fetchall()
-	result_str = getDataset(contas, cur)
-	return render_template('listar-contas.html', contas = result_str)	
+	current_month = datetime.datetime.now().month
+	current_year = datetime.datetime.now().year
+	query = "SELECT * FROM tb_all_contas WHERE conta NOT in (SELECT conta FROM tb_contas_pagas WHERE EXTRACT(YEAR FROM data_pagamento) = %s AND EXTRACT(MONTH FROM data_pagamento) = %s)" % (current_year, current_month)
+	result_str = getDataset(query)
+	return render_template('listar-contas.html', contas = result_str)
 
 @app.route("/update-conta")
 def update_conta():
 	conn, cur = load_config()
 	conta = "'%s'" % request.args.get("conta") if request.args.get("conta") else 'NULL'
-	data_vencimento = "'%s'" % request.args.get("data_vencimento") if request.args.get("data_vencimento") else 'NULL'
 	data_pagamento = "'%s'" % request.args.get("data_pagamento") if request.args.get("data_pagamento") else 'NULL'
+	data_vencimento = "'%s'" % request.args.get("data_vencimento") if request.args.get("data_vencimento") else 'NULL'
 	pagador = "'%s'" % request.args.get("pagador") if request.args.get("pagador") else 'NULL'
 	valor_pago = "'%.2f'" % float(request.args.get("valor_pago")) if request.args.get("valor_pago") else 'NULL'
+	categoria = "'%s'" % request.args.get("categoria") if request.args.get("categoria") else 'NULL'
+	obs = "'%s'" % request.args.get("obs") if request.args.get("obs") else 'NULL'
 
-	set_str = "%s = %s, %s = %s, %s = %s, %s = '%s'" % ('data_pagamento', data_pagamento, 'pagador', pagador, 'valor_pago', valor_pago, 'pago', 'sim')
-	where_str = "%s = %s AND %s = %s" % ('conta', conta, 'data_vencimento', data_vencimento)
-	print(set_str, file=sys.stderr)
-	set_str = set_str.replace("'NULL'", "NULL")
-	cur.execute('UPDATE %s SET %s WHERE %s' % ('tb_all_contas', set_str, where_str))
+	form = "(%s, %s, %s, %s, %s, %s, %s)" % (conta, data_pagamento, data_vencimento, pagador, valor_pago, categoria, obs)
+	form = form.replace("'NULL'", "NULL")
+	cur.execute('INSERT INTO %s (%s) VALUES %s' % ('tb_contas_pagas', "conta, data_pagamento, data_vencimento, pagador, valor_pago, categoria, obs", form))
 	conn.commit()
 
 	return render_template("redirect.html", message = "'Conta atualizada com sucesso'", page = "'/listar-contas'")
 
 @app.route("/gastos")
 def gastos():
-	conn, cur = load_config()
-	cur.execute("SELECT * FROM tb_gastos")
-	gastos = cur.fetchall()
-	result_str = getDataset(gastos, cur)
+	result_str = getDataset("SELECT * FROM tb_contas_pagas")
 	return render_template("gastos.html", gastos = result_str)
 
 @app.route("/submeter-gasto", methods = ['GET'])
@@ -83,15 +77,15 @@ def submeterGasto():
 	conn, cur = load_config()
 	conta = "'%s'" % request.args.get("conta") if request.args.get("conta") else 'NULL'
 	data_pagamento = "'%s'" % request.args.get("data_pagamento") if request.args.get("data_pagamento") else 'NULL'
-	valor = "'%.2f'" % float(request.args.get("valor")) if request.args.get("valor") else 'NULL'
+	valor_pago = "'%.2f'" % float(request.args.get("valor_pago")) if request.args.get("valor_pago") else 'NULL'
 	pagador = "'%s'" % request.args.get("pagador") if request.args.get("pagador") else 'NULL'
 	obs = "'%s'" % request.args.get("obs") if request.args.get("obs") else 'NULL'
 	categoria = "'%s'" % request.args.get("categoria") if request.args.get("categoria") else 'NULL'
 
-	form = "(%s, %s, %s, %s, %s, %s)" % (conta, data_pagamento, valor, pagador, categoria, obs)
+	form = "(%s, %s, %s, %s, %s, %s)" % (conta, data_pagamento, valor_pago, pagador, categoria, obs)
 	print(form, file=sys.stderr)
 	form = form.replace("'NULL'", "NULL")
-	cur.execute('INSERT INTO %s (%s) values %s' % ('tb_gastos', "conta, data_pagamento, valor, pagador, categoria, obs", form))
+	cur.execute('INSERT INTO %s (%s) values %s' % ('tb_contas_pagas', "conta, data_pagamento, valor_pago, pagador, categoria, obs", form))
 	conn.commit()
 
 	return render_template("redirect.html", message = "'Gasto cadastrado com sucesso'", page = "'/gastos'")	
@@ -127,9 +121,14 @@ def load_config():
 def toBit(x):
 	return "'1'" if x == 'true' else "'0'"
 
-def getDataset(dataset, cur):
+def getDataset(query):
+	conn, cur = load_config()
+	cur.execute(query)
+	dataset = cur.fetchall()
+
 	result = []
 	item = {}
+
 	for obj in dataset:
 		item = {}
 		for i in range(len(obj)):
@@ -142,7 +141,9 @@ def getDataset(dataset, cur):
 				item[key] = ''
 
 		result.append(item)
-		result_str = json.dumps(result, use_decimal = True).replace("'0'","'nao'").replace("'1'", "'sim'")
+	print(type(result), file=sys.stderr)
+	print(result, file=sys.stderr)
+	result_str = json.dumps(result, use_decimal = True).replace("'0'","'nao'").replace("'1'", "'sim'")
 	return result_str
 
 if __name__ == "__main__":

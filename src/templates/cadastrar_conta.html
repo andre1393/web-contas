@@ -1,9 +1,18 @@
 <!DOCTYPE html>
 <html>
 	<head>
+		<meta name="viewport" content="width=device-width">
+		<script language = "javascript" type = "text/javascript" src="https://code.jquery.com/jquery-3.3.1.js"></script>
+		<script language = "javascript" type = "text/javascript" src="http://code.jquery.com/ui/1.9.2/jquery-ui.js"></script>
 		<link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}" />
-				<script type="text/javascript" src="{{ url_for('static', filename = 'js/main.js') }}"></script>
-						<script type="text/javascript" src="{{ url_for('static', filename = 'js/cadastrar-conta.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename = 'js/main.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename = 'js/cadastrar-conta.js') }}"></script>
+		<script type="text/javascript">
+			$(document).ready( function () {
+				var data = {{contas | safe}}
+				append_json(data, 'contas_table', ['conta', 'dia_vencimento', 'valor_conta', 'categoria'])
+			});
+		</script>
 	</head>
 	<title>
 		Cadastro de Contas
@@ -20,26 +29,50 @@
 		<div>
 			<label>Conta:<br></label>
 			<input type = "text" name="conta"><br>
-			<label>Data Vencimento:<br></label>
-			<input type = "date" name = "data_vencimento"><br>
-			<label>Valor Conta:<br></label>
-			<input type="number" min="1" step="any" name = "valor_conta"><br>
-			<hr>
-			<label>Recorrente:<br></label>
-			<input type = "radio" name = "recorrente" id = "recorrente_sim" onclick = "handleRadio(this);" value = "sim" checked="false"> Sim
-			<input type = "radio" name = "recorrente" id = "recorrente_nao" onclick = "handleRadio(this);" value = "nao" checked="true"> Não
+			<label>Dia Vencimento:<br></label>
+			<input type = "number" min = "1" max = "28" name = "dia_vencimento"><br>
+			<label>Categoria:<br></label>
+			<select name = "categoria" id = "categoria">
+				<option value = "Outros">Outros</option>
+				<option value = "Contas Fixas">Contas Fixas</option>
+				<option value = "Alimentação">Alimentação</option>
+				<option value = "Carro">Carro</option>
+				<option value = "Bethoven">Bethoven</option>
+			</select>
 			<br>
-			<div id = "div_recorrente" style = "display : none">
-				<label>Os valores são iguais todos os meses?:<br></label>
-				<input type = "radio" name = "valor_igual" id = "valor_igual_sim" value = "sim" checked="false"> Sim
-				<input type = "radio" name = "valor_igual" id = "valor_igual_nao" value = "nao" checked="true"> Não
-				<br>
+			<hr>
+			<label>Tipo de conta: <br></label>
+			<input type = "radio" name = "tipo_conta" id = "tipo_conta_recorrente", value = "recorrente" onclick="handleRadio(this, '_parcelado')" checked> Recorrente
+			<input type = "radio" name = "tipo_conta" id = "tipo_conta_parcelado", value = "parcelado" onclick="handleRadio(this, '_parcelado')"> Parcelado
+			<br><br>
+				<div id = "div_tipo_conta" style="display : none;">
+				<label>Qtde parcelas:<br></label>
+				<select name = "qtd_parcelas">
+					<option value = "NULL">N/A</option>
+					<option value = "1">1x parcela</option>
+					<option value = "2">2x parcelas</option>
+					<option value = "3">3x parcelas</option>
+					<option value = "4">4x parcelas</option>
+					<option value = "5">5x parcelas</option>
+					<option value = "6">6x parcelas</option>
+					<option value = "7">7x parcelas</option>
+					<option value = "8">8x parcelas</option>
+					<option value = "9">9x parcelas</option>
+					<option value = "10">10x parcelas</option>
+					<option value = "11">11x parcelas</option>
+					<option value = "12">12x parcelas</option>
+				</select>
+				<br><br>
+			</div>
+			<label>Os valores são iguais todos os meses?:<br></label>
+			<input type = "radio" name = "valor_igual" id = "valor_igual_sim" value = "sim" onclick="handleRadio(this, '_sim')" checked> Sim
+			<input type = "radio" name = "valor_igual" id = "valor_igual_nao" value = "nao" onclick="handleRadio(this, '_sim')"> Não
+			<br><br>
+			<div id = "div_valor_igual">
+				<label>Valor Conta:<br></label>
+				<input type="number" min="1" step="any" name = "valor_conta"><br>
 			</div>
 			<hr>
-			<label>Parcelado:<br></label>
-			<input type = "radio" name = "parcelado" id = "parcelado_sim" onclick = "handleRadio(this);" value = "sim" checked = "false"> Sim
-			<input type = "radio" name = "parcelado" id = "parcelado_nao" onclick = "handleRadio(this);" value = "nao" checked = "true"> Não
-			<br>
 			<div id = "div_parcelado" style="display : none;">
 				<label>Qtde parcelas:<br></label>
 				<select name = "qtd_parcelas">
@@ -59,39 +92,20 @@
 				</select>
 				<br>
 			</div>
-			<hr>
-			<label>Categoria:<br></label>
-			<select>
-				<option value = "outros">Outros</option>
-				<option value = "contas_fixas">Contas Fixas</option>
-				<option value = "alimentacao">Alimentação</option>
-				<option value = "carro">Carro</option>
-				<option value = "bethoven">Bethoven</option>
-			</select>
-			<br>
-			<hr>
-			<label>Pago:<br></label>
-			<input type = "radio" name = "pago" id = "pago_sim" value = "sim", onclick = "handleRadio(this);" checked="true"> Sim
-			<input type = "radio" name = "pago" id = "pago_nao" value = "nao", onclick = "handleRadio(this);" checked="false"> Não
-			<br>
-			<div id = "div_pago" style="display: none;">
-				<label>Valor Pago:<br></label>
-				<input type = "text" name = "valor_pago"><br><br>
-				<label>Data Pagamento:<br></label>
-				<input type = "date" name = "data_pagamento"><br><br>
-				<label>Pagador:<br></label>
-				<select name = "pagador">
-					<option value=""></option>
-  					<option value="Andre">André</option>
-  					<option value="Barbara">Barbara</option>
-  					<option value="Mae">Mãe</option>
-  					<option value="Beatriz">Beatriz</option>
-				</select>
-				<br><br>
-			</div>
-			<hr>
 			<input class = "btn_default btn_custom" type = "submit" value = "Enviar">
 		</div>
 		</form>
+		<hr>
+		<div>
+			<table name = "tabela" id = "contas_table" class = "contas_table">
+				<tr>
+				<th> conta </th>
+				<th> dia_vencimento</th>
+				<th> valor </th>
+				<th> categoria </th>
+				</tr>
+				<tr id = "tr"></tr>
+			</table>
+		</div>
 	</body>
 </html>

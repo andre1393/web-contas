@@ -1,10 +1,12 @@
 function validateForm(){
 	var response = ""
 	myForm = document.forms['form']
-	console.log(myForm["pago"].value)
 	if (myForm["conta"].value == ""){ response = response + "o campo conta deve ser preenchido\n"}
-	if (myForm["data_vencimento"].value == ""){ response = response + "o campo data_vencimento deve ser preenchido\n"}
-	if (myForm["valor_conta"].value == ""){ response = response + "o campo valor_conta deve ser preenchido\n"}
+	if (myForm["dia_vencimento"].value == ""){ response = response + "o campo data_vencimento deve ser preenchido\n"}
+	
+	if (myForm["valor_igual"].value == "true"){
+		if (myForm["valor_conta"].value == ""){ response = response + "o campo valor_conta deve ser preenchido\n"}
+	}
 	
 	if (myForm["parcelado"].value == "true"){
 		if (myForm["qtd_parcelas"].value == ""){ response = response + "o campo qtd_parcelas deve ser preenchido\n"}
