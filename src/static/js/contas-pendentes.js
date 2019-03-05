@@ -1,15 +1,14 @@
 //this function appends the json data to the table 'gable'
-function append_json(data){
-	var table = document.getElementById('contas_table');
+function append_json(data, table_name, columns){
+	var table = document.getElementById(table_name);
 	data.forEach(function(object) {
-		data_vencimento = getDataVencimento(object.dia_vencimento)
 		var tr = document.createElement('tr');
-		tr.innerHTML = '<td>' + object.conta + '</td>' +
-		'<td>' + data_vencimento + '</td>' +
-		'<td>' + Number(object.valor_conta).toFixed(2) + '</td>' +
-		'<td>' + object.categoria + '</td>'
+		columns.forEach(function (column) {
+			tr.innerHTML += '<td>' + object[column] + '</td>'
+		});
 		table.appendChild(tr);
 	});
+
 	$("#contas_table tr").click(function(){
    		$(this).addClass('selected').siblings().removeClass('selected');    
    		var value=$(this).find('td');

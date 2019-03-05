@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta name="viewport" content="width=device-width">
+		<script language = "javascript" type = "text/javascript" src="https://code.jquery.com/jquery-3.3.1.js"></script>
+		<script language = "javascript" type = "text/javascript" src="http://code.jquery.com/ui/1.9.2/jquery-ui.js"></script>
+		<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+		<link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}" />
+		<script type="text/javascript">
+			google.charts.load('current', {'packages':['corechart']});
+			google.charts.setOnLoadCallback(drawChart);
+			
+			function drawChart(){
+				var month_int = {{month_int | safe}}
+				var month_str = {{month_str | safe}}
+
+				// configuracao
+				var options_gastos_no_mes = {'title': 'Gastos no mes de ' + month_str, 'width':550, 'height':400, vAxis: {minValue: 0}, annotations: {alwaysOutside: true, opacity: 0}}
+
+				// Gastos no mes
+				var gastos_no_mes = {{gastos_no_mes | safe}}
+				var gastos_no_mes_data = google.visualization.arrayToDataTable(gastos_no_mes);
+				var view = new google.visualization.DataView(gastos_no_mes_data);
+				var chart = new google.visualization.ColumnChart(document.getElementById('gastos_no_mes'));
+  				chart.draw(view, options_gastos_no_mes);
+  				
+  				// gastos por mes
+				var gastos_por_mes = {{gastos_por_mes | safe}}
+				var options_gastos_por_mes = {'title': 'Gastos agrupados por mes', 'width':550, 'height':400, vAxis: {minValue: 0}, annotations: {alwaysOutside: true, opacity: 0}}
+				var gastos_por_mes_data = google.visualization.arrayToDataTable(gastos_por_mes);
+				var view = new google.visualization.DataView(gastos_por_mes_data);
+				var chart = new google.visualization.ColumnChart(document.getElementById('gastos_por_mes'));
+  				chart.draw(view, options_gastos_por_mes);
+  			}
+		</script>
+	</head>
+	<body class = "layout_default">
+		<div align = "right">
+			<button class = "btn_voltar btn_custom" type = "button=" onclick = "location.href='/home';">Voltar</button>
+			<hr>
+	    </div>
+	    <hr>
+	    <div>
+	    	<h1>
+	    		RELATÓRIOS
+	    	</h1>
+	    </div>		
+		<div id="gastos_no_mes"></div>
+		<hr>
+		<div id="gastos_por_mes"></div>
+	</body>
+</html>

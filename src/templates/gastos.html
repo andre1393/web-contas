@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 	<head>
+		<meta name="viewport" content="width=device-width">
 		<script language = "javascript" type = "text/javascript" src="https://code.jquery.com/jquery-3.3.1.js"></script>
 		<script language = "javascript" type = "text/javascript" src="http://code.jquery.com/ui/1.9.2/jquery-ui.js"></script>
 		<link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}" />
@@ -9,21 +10,22 @@
 		<script type="text/javascript">
 			$(document).ready( function () {
 				var data = {{gastos | safe}}
-				append_json(data, 'contas_table', ['conta', 'data_pagamento', 'valor_pago', 'pagador', 'categoria', 'obs'])
+				append_json(data, 'contas_table', ['conta', 'data_pagamento', 'valor_pago', 'pagador', 'obs'])
 			});
 		</script>
 	</head>
 	<title>
 		Gastos
 	</title>
-	<header>
-	    <hr>
+	<body class = "layout_default">
+		<div align = "right">
+			<button class = "btn_voltar btn_custom" type = "button=" onclick = "location.href='/home';">Voltar</button>
+			<hr>
+	    </div>
 		<h1>
 			Gastos
 		</h1>
-		<hr>
-	</header>
-	<body class = "layout_default">
+		<hr>	    
 		<form name = "form" action = "/submeter-gasto" onsubmit="return validateForm()">
 		<div>
 			<label>Conta: <br></label>
@@ -52,8 +54,10 @@
 			<br>
 			<label>OBS: </label><br>
 			<input type = "text" id = "obs" name = "obs"/><br>
+			<input type = "hidden" id = "tipo_gasto" name = "tipo_gasto" value = "GASTOS"/>
 			<input class = "btn_default btn_custom" type = "submit" value = "Enviar" align = "right"><br>
 		</div>
+		</form>
 		<hr>
 		<div>
 			<table name = "tabela" id = "contas_table" class = "contas_table">
@@ -62,12 +66,10 @@
 					<th> data pagamento </th>
 					<th> valor </th>
 					<th> pagador </th>
-					<th> categoria </th>
 					<th> obs </th>
 				</tr>
 				<tr id = "tr"></tr>
 			</table>
 		</div>
-		</form>
 	</body>
 </html>

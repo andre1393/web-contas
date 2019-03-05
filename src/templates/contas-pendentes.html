@@ -1,27 +1,31 @@
 <!DOCTYPE html>
 <html>
 	<head>
+		<meta name="viewport" content="width=device-width">
 		<script language = "javascript" type = "text/javascript" src="https://code.jquery.com/jquery-3.3.1.js"></script>
 		<script language = "javascript" type = "text/javascript" src="http://code.jquery.com/ui/1.9.2/jquery-ui.js"></script>
 		<link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}" />
-		<script type="text/javascript" src="{{ url_for('static', filename = 'js/listar-contas.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename = 'js/main.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename = 'js/contas-pendentes.js') }}"></script>
 		<script type="text/javascript">
 			$(document).ready( function () {
 				var data = {{contas | safe}}
-				append_json(data)
+				append_json(data, 'contas_table', ['conta', 'data_vencimento', 'valor_conta', 'categoria'])
 			});
 		</script>
 	</head>
 	<title>
-		Listar Contas
+		Contas Pendentes
 	</title>
-	<header>
-		<h1 class = "layout_default">
-			<b>Listar Contas</b>
+	<body class = "layout_default">
+		<div align = "right">
+			<button class = "btn_voltar btn_custom" type = "button=" onclick = "location.href='/home';">Voltar</button>
+			<hr>
+	    </div>
+	    <h1 class = "layout_default">
+			<b>CONTAS PENDENTES</b>
 		</h1>
 		<hr>
-	</header>
-	<body class = "layout_default">
 		<table name = "tabela" id = "contas_table" class = "contas_table">
 			<tr>
 				<th> conta </th>
@@ -65,6 +69,7 @@
 				<br><br>
 				<label>OBS: </label><br>
 				<input type = "text" id = "obs" name = "obs"/><br><br>
+				<input type = "hidden" id = "tipo_gasto" name = "tipo_gasto" value = "CONTAS"/>
 				<hr>
 				<input class = "btn_default btn_custom" type = "submit" value = "Pagar">
 			</div>

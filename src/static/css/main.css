@@ -3,6 +3,20 @@
 	background-color: silver;
 	font-weight: bold;
 }
+
+.btn_voltar{
+	background-color: #303030;
+	border: 1px;
+	color: red;
+	padding: 1px 3px;
+	text-align: center;
+	text-decoration: none;
+	display: inline-block;
+	font-size: 15px;
+	border-radius: 45px;
+	border: 2px;
+}
+
 .btn_default{
 	background-color: #303030;
 	border: 1px;
