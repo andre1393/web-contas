@@ -209,15 +209,15 @@ def build_statement(params):
 
 def get_current_month(request):
 	month_int = request.args.get("mes_busca") if request.args.get("mes_busca") else datetime.datetime.now().month
-	months = ("''", "'Janeiro'", "'Fevereiro'", "'Março'", "'Abril'", "'Maio'", "'Junho'", "'Agosto'", "'Setembro'", "'Outubro'", "'Novembro'", "'Dezembro'")
+	months = ("''", "'Janeiro'", "'Fevereiro'", "'Março'", "'Abril'", "'Maio'", "'Junho'", "'Julho'", "'Agosto'", "'Setembro'", "'Outubro'", "'Novembro'", "'Dezembro'")
 	return month_int, months[month_int]
 
 def get_month_str(month_int, start_zero = False):
 	months = None
 	if start_zero:
-		months = ("'Janeiro'", "'Fevereiro'", "'Março'", "'Abril'", "'Maio'", "'Junho'", "'Agosto'", "'Setembro'", "'Outubro'", "'Novembro'", "'Dezembro'")
+		months = ("'Janeiro'", "'Fevereiro'", "'Março'", "'Abril'", "'Maio'", "'Junho'", "'Julho'", "'Agosto'", "'Setembro'", "'Outubro'", "'Novembro'", "'Dezembro'")
 	else:
-		months = ("''", "'Janeiro'", "'Fevereiro'", "'Março'", "'Abril'", "'Maio'", "'Junho'", "'Agosto'", "'Setembro'", "'Outubro'", "'Novembro'", "'Dezembro'")
+		months = ("''", "'Janeiro'", "'Fevereiro'", "'Março'", "'Abril'", "'Maio'", "'Junho'", "'Julho'", "'Agosto'", "'Setembro'", "'Outubro'", "'Novembro'", "'Dezembro'")
 
 	return months[int(month_int)]
 
