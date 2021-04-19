@@ -1,11 +1,14 @@
+import sys
+import datetime
+
 from flask import Flask, render_template, request, redirect, url_for
 import simplejson as json
-import sys
-import psycopg2
 from psycopg2.errors import DuplicateTable
-import datetime
-import numbers
-import os
+
+from sql_helper import get_dataset, build_statement
+from settings import get_configs, load_config
+from utils import get_current_month, get_month_str
+
 
 app = Flask(__name__)
 
@@ -159,116 +162,6 @@ def add_header(r):
     r.headers['Expires'] = '0'
     r.headers['Cache-Control'] = 'public, max-age=0'
     return r
-
-
-def load_config():
-    configs = get_configs()
-
-    conn_string = 'host={} dbname={} user={} password={}'.format(
-        configs['db_host'], configs['db_name'], configs['db_user'], configs['db_password']
-    )
-    conn = psycopg2.connect(conn_string)
-    cur = conn.cursor()
-
-    return conn, cur
-
-
-def to_bit(x):
-    return "'1'" if x == 'true' else "'0'"
-
-
-def get_dataset(query):
-    conn, cur = load_config()
-    cur.execute(query)
-    dataset = cur.fetchall()
-
-    result = []
-    item = {}
-
-    for obj in dataset:
-        item = {}
-        for i in range(len(obj)):
-            if isinstance(obj[i], datetime.date):
-                item[cur.description[i][0]] = obj[i].strftime('%d/%m/%Y')
-            elif (cur.description[i][0] in ['valor_pago', 'valor_conta']) and (isinstance(obj[i], numbers.Number)):
-                print(cur.description[i][0], file=sys.stderr)
-                print(type(obj[i]), file=sys.stderr)
-                print(obj[i], file=sys.stderr)
-                item[cur.description[i][0]] = '%.2f' % obj[i]
-            else:
-                item[cur.description[i][0]] = obj[i]
-        for key, it in item.items():
-            if it is None:
-                item[key] = ''
-
-        result.append(item)
-    print(type(result), file=sys.stderr)
-    print(result, file=sys.stderr)
-    result_str = json.dumps(result, use_decimal=True).replace("'0'", "'nao'").replace("'1'", "'sim'")
-    return result_str
-
-
-def get_value_from_param(request, param, convert_param=None):
-    placeholder = ""
-    if convert_param == float:
-        placeholder = "'%.2f'"
-    else:
-        placeholder = "'%s'"
-
-    if convert_param is None:
-        return placeholder % request.args.get(param) if request.args.get(param) else 'NULL'
-    else:
-        return placeholder % convert_param(request.args.get(param)) if request.args.get(param) else 'NULL'
-
-
-def build_values(form, value, init_symbol, final_symbol):
-    if value == '':
-        return form + final_symbol
-
-    if form == '':
-        form += init_symbol
-    else:
-        form += ', '
-
-    return form + value
-
-
-def build_statement(params):
-    values = ''
-    columns = ''
-    for param, convert_param in params.items():
-        columns = build_values(columns, param, '', '')
-
-        value = get_value_from_param(request, param, convert_param)
-        values = build_values(values, value, '(', ')')
-
-    values = build_values(values, '', '(', ')')
-    values = values.replace("'NULL'", 'NULL')
-    return columns, values
-
-
-def get_current_month(request):
-    month_int = request.args.get('mes_busca') if request.args.get('mes_busca') else datetime.datetime.now().month
-    return month_int, get_month_str(month_int, start_zero=False)
-
-
-def get_month_str(month_int, start_zero=False):
-    if start_zero:
-        months = ("'Janeiro'", "'Fevereiro'", "'Março'", "'Abril'", "'Maio'", "'Junho'", "'Julho'", "'Agosto'",
-                  "'Setembro'", "'Outubro'", "'Novembro'", "'Dezembro'")
-    else:
-        months = ("''", "'Janeiro'", "'Fevereiro'", "'Março'", "'Abril'", "'Maio'", "'Junho'", "'Julho'", "'Agosto'",
-                  "'Setembro'", "'Outubro'", "'Novembro'", "'Dezembro'")
-
-    return months[int(month_int)]
-
-
-def get_configs():
-    configs = {'host': os.getenv('HOST'), 'port': os.getenv('PORT'), 'debug': os.getenv('DEBUG'),
-               'db_host': os.getenv('DB_HOST'), 'db_name': os.getenv('DB_NAME'), 'db_port': os.getenv('DB_PORT'),
-               'db_user': os.getenv('DB_USER'), 'db_password': os.getenv('DB_PASSWORD')}
-
-    return configs
 
 
 if __name__ == '__main__':
