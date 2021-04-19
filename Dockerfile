@@ -1,0 +1,29 @@
+FROM python:3.7-slim-buster
+
+RUN mkdir /home/app/
+
+WORKDIR /home/app/
+
+COPY ./requirements.txt ./
+
+ARG HOST
+ARG PORT
+ARG DEBUG
+ARG DB_HOST
+ARG DB_NAME
+ARG DB_USER
+ARG DB_PASSWORD
+
+ENV HOST $HOST
+ENV PORT $PORT
+ENV DEBUG $DEBUG
+ENV DB_HOST $DB_HOST
+ENV DB_NAME $DB_NAME
+ENV DB_USER $DB_USER
+ENV DB_PASSWORD $DB_PASSWORD
+
+RUN pip install -r requirements.txt
+
+COPY ./ ./
+
+ENTRYPOINT ["sh", "init.sh"]
