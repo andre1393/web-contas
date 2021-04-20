@@ -74,5 +74,5 @@ def build_statement(params):
         values = build_values(values, value, '(', ')')
 
     values = build_values(values, '', '(', ')')
-    values = values.replace("'NULL'", 'NULL')
+    values = values.replace("'NULL'", 'NULL').replace("'None'", 'NULL')
     return columns, values
